@@ -1,0 +1,6 @@
+vowels = ['a','e','i','o','u']
+letter_input = input('Enter a letter: ')
+
+if letter_input in vowels: print('{} is a vowel'.format(letter_input))
+elif letter_input == 'y': print('y is sometimes a vowel')
+else: print("{} is not a vowel".format(letter_input))
