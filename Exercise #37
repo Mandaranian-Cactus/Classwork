@@ -1,0 +1,12 @@
+side_count  = int(input('Print # of sides for your shape'))
+
+if 3 <= side_count <= 10: 
+	if side_count == 3: print('triangle')
+	elif side_count == 4: print('Square')
+	elif side_count == 5: print('pentagon')
+	elif side_count == 6: print('hexagon')
+	elif side_count == 7: print('Septagon')
+	elif side_count == 8: print('octagon')
+	elif side_count == 9: print('9-gon')
+	else: print('10-gon')
+else: print("Program doesn't support shapes with {} sides".format(side_count))
