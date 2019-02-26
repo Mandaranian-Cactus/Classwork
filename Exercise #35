@@ -1,0 +1,13 @@
+import sys
+human_years = int(input('How old is your dog in human years? \n'))
+
+if human_years < 0: 
+	print('Error: NO INPUT UNDER 0 YEARS')
+	sys.exit()
+elif human_years <= 2: 
+	dog_years = human_years * 10.5
+else: 
+	years_past_2 = human_years - 2
+	dog_years = 2 * 10.5 + years_past_2 * 4
+
+print('Number is dog years is {dog_years}.'.format(dog_years = dog_years))
