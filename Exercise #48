@@ -1,0 +1,5 @@
+year_input = int(input('Enter a year: '))
+animal_rotation = 'Rat, Ox, Tiger, Rabbit, Dragon, Snake, Horse, Sheep, Monkey, Rooster, Dog, Pig'.split(', ')
+
+print('The year that you have inputed is the year of the {}.'.format(animal_rotation[year_input % 12]))
+
