@@ -1,0 +1,130 @@
+import turtle
+import random
+import math
+
+#https://www.youtube.com/watch?v=WrOM9Um84oQ
+
+#Screen Set up
+wn = turtle.Screen()
+wn.bgcolor('black')
+wn.title('Game Test')
+
+#Player class
+class Player(turtle.Turtle): #'Player' is a child of the 'turtle module' (sub class)
+
+    ########################## CLASS CONSTRUCTOR ###########################
+    
+    def __init__(self): #Draw turtle
+        turtle.Turtle.__init__(self)
+        #Properties
+        self.penup()
+        self.shape('triangle')
+        self.color('white')
+        self.speed = 0.5 #This line is NOT PART OF THE TURTLE CLASS/MODULE
+
+    def move(self): #Movement function
+        self.forward(self.speed) 
+        
+        #Border Checking
+        if self.xcor() > 290 or self.xcor() < -290:
+            self.left(60)
+        if self.ycor() > 290 or self.ycor() < -290:
+            self.left(60)
+
+    def turn_left(self):
+        self.left(30)
+
+    def turn_right(self):
+        self.right(30)
+
+    def increase_speed(self):
+        self.speed += 0.25
+
+#Boarder class
+class Border(turtle.Turtle): #Child of the turtle class
+    def __init__(self): #Create border drawer
+        turtle.Turtle.__init__(self)
+        self.penup()
+        self.hideturtle()
+        self.speed(0) #This line is PART OF THE TURTLE CLASS/MODULE
+        self.color('white')
+        self.pensize(5)
+
+    def draw_border(self):
+        #self.penup()
+        self.goto(-300,-300)
+        self.pendown()
+        self.goto(-300,300)
+        self.goto(300,300)
+        self.goto(300,-300)
+        self.goto(-300,-300)
+
+#Goal class
+class Goal(turtle.Turtle):
+
+    def __init__(self):
+        turtle.Turtle.__init__(self)
+        self.penup()
+        self.speed(0)
+        self.color('green')
+        self.shape('circle')
+        self.speed = .5
+        self.goto(random.randint(-250,250),random.randint(-250,250))
+        self.setheading(random.randint(0,360))
+
+    def jump(self):
+        self.goto(random.randint(-250,250),random.randint(-250,250))
+        self.setheading(random.randint(0,360))
+
+    def move(self): #Movement function
+        self.forward(self.speed) 
+        
+        #Border Checking
+        if self.xcor() > 290 or self.xcor() < -290:
+            self.left(60)
+        if self.ycor() > 290 or self.ycor() < -290:
+            self.left(60)
+
+#Collision detection
+def isCollision(t1,t2): #Find distance between turtle 1 and turtle 2
+    a = t1.xcor() - t2.xcor()
+    b = t1.ycor() - t1.ycor()
+    distance = math.sqrt((a**2) + (b**2)) #Pythagorean theorem
+
+    if distance < 1:
+        return True #Yes
+    else:
+        return False #No
+
+#Create instances (I don't know what instances are)
+player_1 = Player() #'Player' refers to the class. 'player' refers to instance
+border = Border()
+
+#Create multiple goals
+goals = []
+for count in range(1):
+    goals.append(Goal())
+
+#Set keyboard bindings
+turtle.listen() #program begins to listen to key presses
+turtle.onkey(player_1.turn_left, 'Left') 
+turtle.onkey(player_1.turn_right, 'Right')
+turtle.onkey(player_1.increase_speed, 'Up')
+
+#########################    DRIVER CODE   ##################################
+
+#Speed up game
+wn.tracer(0) #Freezes everything previously executed (Boarder,etc)
+
+#Draw the border
+border.draw_border()
+while True: #Main loop
+    player_1.move()
+    for goal in goals:
+        goal.move()
+
+        if isCollision(player_1, goal) == True:
+            #goal.hideturtle()    
+            goal.jump()
+
+    wn.update()#Refersh Screen
