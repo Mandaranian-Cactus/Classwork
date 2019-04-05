@@ -1,4 +1,3 @@
-
 import turtle
 import random
 import math
@@ -40,6 +39,9 @@ class Player(turtle.Turtle): #'Player' is a child of the 'turtle module' (sub cl
 
     def increase_speed(self):
         self.speed += 0.5
+
+    def decrease_speed(self):
+        self.speed -= 0.5
 
 #Boarder class
 class Border(turtle.Turtle): #Child of the turtle class
@@ -112,39 +114,26 @@ class Follower(turtle.Turtle):
         self.color('red')
         self.shape('circle')
         self.pensize(5)
-        self.speed = 0.7
-        self.angle = random.randint(0,360)
-        self.goto(random.randint(-250,250),random.randint(-250,250))
-        #self.setheading(self.angle)
-        self.setheading(0)
+        self.xvar = random.randint(-250, 250)
+        self.yvar = random.randint(-250,250)
+        self.goto(self.xvar, self.yvar)
+        self.setheading(random.randint(0,360))
 
     def move(self):
-        self.setheading(self.angle)
-        self.forward(self.speed)
+        self.goto(self.xvar, self.yvar)
 
 #Follower angle
-def new_angle(t1,t2): #Uses SOH-CAH-***TOA***
-    opposite = abs(t1.xcor() - t2.xcor())
-    adjacent = abs(t1.ycor() - t2.ycor())
+def follower_move(follower, player_1, distance_move):
+    height = player_1.ycor() - follower.ycor()
+    width = player_1.xcor() - follower.xcor()
 
-    angle = math.atan(opposite / adjacent) * 180 / math.pi
+    hypotenuse = math.sqrt(height ** 2 + width ** 2)
+    ratio = distance_move / hypotenuse
 
-    if t2.xcor() < t1.xcor() and t2.ycor() > t1.ycor(): #Quadrant 2 
-        heading = 90 + (90 - angle)
-    elif t2.xcor() < t1.xcor() and t2.ycor() < t1.ycor(): #Quadrant 3
-        heading = 180 + angle
-    elif t2.xcor() > t1.xcor() and t2.ycor() > t1.ycor(): #Quadrant 1
-        heading = 0 + angle
-    elif t2.xcor() == t1.xcor() and t2.ycor() > t1.ycor(): #Up
-        heading = 90
-    elif t2.xcor() == t1.xcor() and t2.ycor() < t1.ycor(): #Down
-        heading = 270
-    elif t2.xcor() < t1.xcor() and t2.ycor() == t1.xcor(): #Right
-        heading = 0
-    else: #Quadrant 4
-        heading = 270 + (90 - angle)
-
-    return heading
+    height *= ratio
+    width *= ratio
+    
+    return [follower.xcor() + width, follower.ycor() + height]
 
 #Collision detection
 def enemy_collision(t1,t2): #Find distance between turtle 1 and turtle 2
@@ -166,7 +155,7 @@ def enemy_collision(t1,t2): #Find distance between turtle 1 and turtle 2
 
     distance = math.sqrt(a**2 + b**2) #Pythagorean theorem
     
-    if distance < 20:
+    if distance < 13:
         return True #Yes
     else:
         return False #No
@@ -177,11 +166,11 @@ border = Border()
 
 #Create multiple enemys
 enemies = []
-for count in range(15):
+for count in range(20):
     enemies.append(Enemy())
 
 followers = []
-for count in range(3):
+for count in range(1):
     followers.append(Follower())
 
 #Set keyboard bindings
@@ -189,8 +178,10 @@ turtle.listen() #program begins to listen to key presses
 turtle.onkey(player_1.turn_left, 'Left') 
 turtle.onkey(player_1.turn_right, 'Right')
 turtle.onkey(player_1.increase_speed, 'Up')
+turtle.onkey(player_1.decrease_speed,'Down')
 
 #########################    DRIVER CODE   ##################################
+score = 0
 
 #Speed up game
 wn.tracer(0) #Freezes everything previously executed (Boarder,etc)
@@ -201,7 +192,16 @@ while True: #Main loop
     wn.update()#Refersh Screen
     player_1.move()
     for follower in followers:
-        follower.angle = new_angle(follower, player_1)
+        follower.xvar, follower.yvar = follower_move(follower, player_1, 1)
         follower.move()
-    
+        if enemy_collision(player_1, follower) == True:
+            print(score)
+            sys.exit()
 
+    for enemy in enemies:
+        enemy.move()
+        if enemy_collision(player_1, enemy) == True:
+            print(score)
+            sys.exit()
+
+    score += 1
