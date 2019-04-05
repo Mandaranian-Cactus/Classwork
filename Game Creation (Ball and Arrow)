@@ -1,148 +1,5 @@
+
 import turtle
-import random
-import math
-
-#https://www.youtube.com/watch?v=WrOM9Um84oQ
-
-#Screen Set up
-wn = turtle.Screen()
-wn.bgcolor('black')
-wn.title('Game Test')
-wn.setup(1000,1000, 250,0)
-
-#Player class
-class Player(turtle.Turtle): #'Player' is a child of the 'turtle module' (sub class)
-   
-    def __init__(self): #Draw turtle
-        turtle.Turtle.__init__(self)
-        #Properties
-        self.penup()
-        self.shape('triangle')
-        self.color('white')
-        self.speed = 0.5
-
-    def move(self): #Movement function
-        self.forward(self.speed) 
-        
-        #Border Checking
-        if self.xcor() > 290 or self.xcor() < -290:
-            self.left(60)
-        if self.ycor() > 290 or self.ycor() < -290:
-            self.left(60)
-
-    def turn_left(self):
-        self.left(30)
-
-    def turn_right(self):
-        self.right(30)
-
-    def increase_speed(self):
-        self.speed += 0.25
-
-#Boarder class
-class Border(turtle.Turtle): #Child of the turtle class
-    def __init__(self): #Create border drawer
-        turtle.Turtle.__init__(self)
-        self.penup()
-        self.hideturtle()
-        self.speed(0) #This line is PART OF THE TURTLE CLASS/MODULE
-        self.color('white')
-        self.pensize(5)
-
-    def draw_border(self):
-        #self.penup()
-        self.goto(-300,-300)
-        self.pendown()
-        self.goto(-300,300)
-        self.goto(300,300)
-        self.goto(300,-300)
-        self.goto(-300,-300)
-
-#Goal class
-class Goal(turtle.Turtle):
-
-    def __init__(self):
-        turtle.Turtle.__init__(self)
-        self.penup()
-        self.speed(0)
-        self.color('green')
-        self.shape('circle')
-        self.speed = .5
-        self.goto(random.randint(-250,250),random.randint(-250,250))
-        self.setheading(random.randint(0,360))
-
-    def jump(self):
-        self.goto(random.randint(-250,250),random.randint(-250,250))
-        self.setheading(random.randint(0,360))
-
-    def move(self): #Movement function
-        self.forward(self.speed) 
-        
-        #Border Checking
-        if self.xcor() > 290 or self.xcor() < -290:
-            self.left(60)
-        if self.ycor() > 290 or self.ycor() < -290:
-            self.left(60)
-
-#Collision detection
-def is_collision(t1,t2): #Find distance between turtle 1 and turtle 2
-    #(0,0) is the center of the screen
-    if t1.xcor() >= 0: t1_x = wn.window_width() // 2 + t1.xcor() 
-    else: t1_x = wn.window_width()//2 - abs(t1.xcor())
-
-    if t1.ycor() >= 0: t1_y = wn.window_height() // 2 + t1.ycor() 
-    else: t1_y = wn.window_height()//2 - abs(t1.ycor())
-
-    if t2.xcor() >= 0: t2_x = wn.window_width() // 2 + t2.xcor() 
-    else: t2_x = wn.window_width()//2 - abs(t2.xcor())
-
-    if t2.ycor() >= 0: t2_y = wn.window_height() // 2 + t2.ycor() 
-    else: t2_y = wn.window_height()//2 - abs(t2.ycor())
-
-    a = abs(t1_x - t2_x)
-    b = abs(t1_y - t2_y)
-
-    distance = math.sqrt(a**2 + b**2) #Pythagorean theorem
-    
-    if distance < 20:
-        return True #Yes
-    else:
-        return False #No
-
-#Create instances (I don't know what instances are)
-player_1 = Player() #'Player' refers to the class. 'player' refers to instance
-border = Border()
-
-#Create multiple goals
-goals = []
-for count in range(10):
-    goals.append(Goal())
-
-#Set keyboard bindings
-turtle.listen() #program begins to listen to key presses
-turtle.onkey(player_1.turn_left, 'Left') 
-turtle.onkey(player_1.turn_right, 'Right')
-turtle.onkey(player_1.increase_speed, 'Up')
-
-#########################    DRIVER CODE   ##################################
-
-#Speed up game
-wn.tracer(0) #Freezes everything previously executed (Boarder,etc)
-
-#Draw the border
-border.draw_border()
-while True: #Main loop
-    wn.update()#Refersh Screen
-    player_1.move()
-    for goal in goals:
-        goal.move()
-            
-        if is_collision(player_1, goal) == True:
-            #goal.hideturtle()
-            goal.jump()
-            
- '''
- import turtle
 import random
 import math
 import sys
@@ -255,10 +112,11 @@ class Follower(turtle.Turtle):
         self.color('red')
         self.shape('circle')
         self.pensize(5)
-        self.speed = 0.3
+        self.speed = 0.7
         self.angle = random.randint(0,360)
         self.goto(random.randint(-250,250),random.randint(-250,250))
-        self.setheading(self.angle)
+        #self.setheading(self.angle)
+        self.setheading(0)
 
     def move(self):
         self.setheading(self.angle)
@@ -272,15 +130,21 @@ def new_angle(t1,t2): #Uses SOH-CAH-***TOA***
     angle = math.atan(opposite / adjacent) * 180 / math.pi
 
     if t2.xcor() < t1.xcor() and t2.ycor() > t1.ycor(): #Quadrant 2 
-        angle = 270 + (90 - angle)
+        heading = 90 + (90 - angle)
     elif t2.xcor() < t1.xcor() and t2.ycor() < t1.ycor(): #Quadrant 3
-        angle = 180 + angle
+        heading = 180 + angle
     elif t2.xcor() > t1.xcor() and t2.ycor() > t1.ycor(): #Quadrant 1
-        angle = 0 + angle
+        heading = 0 + angle
+    elif t2.xcor() == t1.xcor() and t2.ycor() > t1.ycor(): #Up
+        heading = 90
+    elif t2.xcor() == t1.xcor() and t2.ycor() < t1.ycor(): #Down
+        heading = 270
+    elif t2.xcor() < t1.xcor() and t2.ycor() == t1.xcor(): #Right
+        heading = 0
     else: #Quadrant 4
-        angle = 90 + (90 - angle)
+        heading = 270 + (90 - angle)
 
-    return angle
+    return heading
 
 #Collision detection
 def enemy_collision(t1,t2): #Find distance between turtle 1 and turtle 2
@@ -310,12 +174,15 @@ def enemy_collision(t1,t2): #Find distance between turtle 1 and turtle 2
 #Create instances (I don't know what instances are)
 player_1 = Player() #'Player' refers to the class. 'player' refers to instance
 border = Border()
-follower = Follower()
 
 #Create multiple enemys
 enemies = []
 for count in range(15):
     enemies.append(Enemy())
+
+followers = []
+for count in range(3):
+    followers.append(Follower())
 
 #Set keyboard bindings
 turtle.listen() #program begins to listen to key presses
@@ -333,12 +200,8 @@ border.draw_border()
 while True: #Main loop
     wn.update()#Refersh Screen
     player_1.move()
-    follower.angle = new_angle(player_1, follower)
-    print(follower.angle)
-    follower.move()
+    for follower in followers:
+        follower.angle = new_angle(follower, player_1)
+        follower.move()
     
 
-
-    
-
-  '''
