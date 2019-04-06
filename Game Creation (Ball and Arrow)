@@ -155,7 +155,7 @@ def enemy_collision(t1,t2): #Find distance between turtle 1 and turtle 2
 
     distance = math.sqrt(a**2 + b**2) #Pythagorean theorem
     
-    if distance < 13:
+    if distance < 10:
         return True #Yes
     else:
         return False #No
@@ -166,11 +166,11 @@ border = Border()
 
 #Create multiple enemys
 enemies = []
-for count in range(20):
-    enemies.append(Enemy())
+#for count in range(9):
+#    enemies.append(Enemy())
 
 followers = []
-for count in range(1):
+for count in range(10):
     followers.append(Follower())
 
 #Set keyboard bindings
@@ -192,7 +192,7 @@ while True: #Main loop
     wn.update()#Refersh Screen
     player_1.move()
     for follower in followers:
-        follower.xvar, follower.yvar = follower_move(follower, player_1, 1)
+        follower.xvar, follower.yvar = follower_move(follower, player_1, 0.15)
         follower.move()
         if enemy_collision(player_1, follower) == True:
             print(score)
@@ -204,4 +204,7 @@ while True: #Main loop
             print(score)
             sys.exit()
 
+    if score % 150 == 0:
+        for i in range(3):
+            followers.append(Follower())
     score += 1
