@@ -122,6 +122,53 @@ class Follower(turtle.Turtle):
     def move(self):
         self.goto(self.xvar, self.yvar)
 
+class Straight(turtle.Turtle):
+    def __init__(self):
+        turtle.Turtle.__init__(self)
+        self.color('blue')
+        self.shape('circle')
+        self.pensize(5)
+        self.speed(0)
+        self.speed = 0.5
+        self.penup()
+        self.hideturtle()
+
+    def move(self):
+        self.forward(self.speed)
+
+
+def row_come(ycor, space, pensize):
+    row_come = []
+    for i in range(wn.window_width() // (space + pensize)):
+        row_come.append(Straight())
+
+    xcor = -(wn.window_width() / 2) + space
+    for turtle in row_come:
+        turtle.showturtle()
+        turtle.setheading(270)
+        turtle.goto(xcor, ycor)
+        xcor += space
+
+    return row_come
+
+def Column_come(xcor, space, pensize):
+    column_come = []
+    for i in range(wn.window_height() // (space + pensize)):
+        column_come.append(Straight())
+
+    ycor = -(wn.window_width() / 2) + space
+    for turtle in column_come:
+        turtle.showturtle()
+        turtle.setheading(180)
+        turtle.goto(xcor,ycor)
+        ycor += space
+
+    return column_come
+####
+row_come = row_come(wn.window_height() / 2 - 20,60,5)
+column_come = Column_come(wn.window_width() / 2 - 20,60,5)
+####
+
 #Follower angle
 def follower_move(follower, player_1, distance_move):
     height = player_1.ycor() - follower.ycor()
@@ -155,7 +202,7 @@ def enemy_collision(t1,t2): #Find distance between turtle 1 and turtle 2
 
     distance = math.sqrt(a**2 + b**2) #Pythagorean theorem
     
-    if distance < 10:
+    if distance < 15:
         return True #Yes
     else:
         return False #No
@@ -166,12 +213,12 @@ border = Border()
 
 #Create multiple enemys
 enemies = []
-#for count in range(9):
-#    enemies.append(Enemy())
+for count in range(13):
+    enemies.append(Enemy())
 
 followers = []
-for count in range(10):
-    followers.append(Follower())
+#for count in range(10):
+#    followers.append(Follower())
 
 #Set keyboard bindings
 turtle.listen() #program begins to listen to key presses
@@ -204,7 +251,21 @@ while True: #Main loop
             print(score)
             sys.exit()
 
-    if score % 150 == 0:
+    if score % 500 == 0:
         for i in range(3):
             followers.append(Follower())
     score += 1
+
+
+    for straight in row_come:
+        straight.move()
+        if enemy_collision(player_1, straight) == True:
+            print(score)
+            sys.exit()
+
+    for straight in column_come:
+        straight.move()
+        if enemy_collision(player_1, straight) == True:
+            print(score)
+            sys.exit()
+
